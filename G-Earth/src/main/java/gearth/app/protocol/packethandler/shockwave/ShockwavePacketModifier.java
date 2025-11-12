@@ -148,7 +148,14 @@ public class ShockwavePacketModifier {
             this.enableClientCrypto();
         }
 
-        return ByteArrayUtils.combineByteArrays(data, PACKET_END);
+        // with CS enc disabled, extraneous PACKET_END being recv'd
+        if (data[data.length - 1] == 0x01) {
+            return data;
+        } else {
+            return ByteArrayUtils.combineByteArrays(data, PACKET_END);
+        }
+
+        // return ByteArrayUtils.combineByteArrays(data, PACKET_END);
     }
 
     private static byte[] encryptPacket(byte[] packet, BobbaChaChaKey headerKey, BobbaChaChaKey dataKey) {
