@@ -75,15 +75,28 @@ public class ShockwavePacketHandler extends PacketHandler {
 
     private void handle(byte[] messageBytes) {
         synchronized (flushLock) {
-            final HPacket packet = format.createPacket(messageBytes);
+            if (messageBytes[messageBytes.length - 1] == 0x01) {
+                final HPacket packet = format.createPacket(Arrays.copyOf(messageBytes, messageBytes.length - 1));
 
-            packet.setIdentifierDirection(direction);
+                packet.setIdentifierDirection(direction);
 
-            final HMessage message = new HMessage(packet, direction, currentIndex);
+                final HMessage message = new HMessage(packet, direction, currentIndex);
 
-            awaitListeners(message, x -> sendToStream(x.getPacket().toBytes()));
+                awaitListeners(message, x -> sendToStream(x.getPacket().toBytes()));
 
-            currentIndex++;
+                currentIndex++;
+            } else {
+                final HPacket packet = format.createPacket(messageBytes);
+
+                packet.setIdentifierDirection(direction);
+
+                final HMessage message = new HMessage(packet, direction, currentIndex);
+
+                awaitListeners(message, x -> sendToStream(x.getPacket().toBytes()));
+
+                currentIndex++;
+            }
+            
         }
     }
 }
