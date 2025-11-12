@@ -132,9 +132,10 @@ public class ShockwavePacketModifier {
     }
 
     public byte[] gearthToClient(byte[] data) {
-        if (this.clientCryptoEnabled) {
-            return encryptPacket(data, this.client.getS2cHeader(), this.client.getS2cData());
-        }
+        // modify client to disable incoming encryption
+        // if (this.clientCryptoEnabled) {
+        //     return encryptPacket(data, this.client.getS2cHeader(), this.client.getS2cData());
+        // }
 
         final HPacket message = HPacketFormat.WEDGIE_INCOMING.createPacket(data);
 
